@@ -31,7 +31,7 @@ in your plugin class
       include ClassX
       include ClassX::Pluggable::Plugin
 
-      class SomePlugin
+      class SomePlugin < Plugin
         def register
           self.context.add_event("SETUP") do |c|
             # c is YourApp::Context's instance.
