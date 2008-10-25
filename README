@@ -1,7 +1,55 @@
 
 = classx-pluggable
 
+plgger's like plugin system for classx based applicaton
+
 == Synopsis
+
+in your context class.
+
+  require 'classx'
+  require 'classx/pluggable'
+  module YourApp
+    class Context
+      include ClassX
+      include ClassX::Pluggable
+
+      def run
+        call_event("SETUP", self)
+        # you app
+        call_event("TEARDOWN", self)
+      end
+    end
+  end
+
+in your plugin class
+
+  require 'classx'
+  require 'classx/pluggable'
+  module YourApp
+    class Plugin
+      include ClassX
+      include ClassX::Pluggable::Plugin
+
+      class SomePlugin
+        def register
+          self.context.add_event("SETUP") do |c|
+            # c is YourApp::Context's instance.
+            # hooked setup
+          end
+        end
+      end
+    end
+  end
+
+and, on your start up script.
+
+  app = YourApp::Context.new
+  app.load_plugins([
+    { :module => YourApp::Plugin::SomePlugin, :config => {} },
+  ])
+
+  app.run
 
 == Description
 
@@ -13,9 +61,9 @@
 
 === Gem Installation
 
-	gem install classxpluggable
-
 == Features/Problems
+
+CAVEAT: this project is early development. API may be vary in future.
 
 == Copyright
 
