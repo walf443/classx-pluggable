@@ -77,7 +77,7 @@ if $0 == __FILE__
   app = TestRunner.new(:test_cases => [:foo, :bar, :baz], :log_level => 'debug') # dummy
   app.load_plugins([
     { :module => TestRunner::Plugin::SetupFixture, },
-    { :module => TestRunner::Plugin::TestTimer, },
+    { :module => "TestRunner::Plugin::TestTimer", },
   ])
 
   app.run
