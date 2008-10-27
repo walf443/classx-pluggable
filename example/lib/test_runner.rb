@@ -11,21 +11,20 @@ class TestRunner
   has :test_cases
 
   def run
-    call_event(:BEFORE_ALL, self)
+    around_event(:ALL, self) do
 
-    test_cases.each do |tc|
-      _do_test(tc)
+      test_cases.each do |tc|
+        _do_test(tc)
+      end
+
     end
-
-    call_event(:AFTER_ALL, self)
   end
 
   # it's dummy
   def _do_test tc
-    call_event(:BEFORE_EACH, self, tc)
-
-    sleep(0.1)
-    call_event(:AFTER_EACH, self, tc)
+    around_event(:EACH, self, tc) do
+      sleep(0.1)
+    end
   end
 
   module Plugin
