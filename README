@@ -33,10 +33,12 @@ in your plugin class
 
       class SomePlugin < Plugin
         def register
-          self.context.add_event("SETUP") do |c|
-            # c is YourApp::Context's instance.
-            # hooked setup
-          end
+          add_event("SETUP", :on_setup)
+        end
+
+        def on_setup c
+          # c is YourApp::Context's instance.
+          # hooked setup
         end
       end
     end
