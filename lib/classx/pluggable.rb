@@ -6,6 +6,8 @@ module ClassX
     extend ClassX::Attributes
     extend ClassX::Role::Logger
 
+    class PluginLoadError < ::Exception; end
+
     DEFAULT_PLUGIN_DIR = File.expand_path(File.join(File.dirname(__FILE__), File.basename(__FILE__).sub(/\.rb$/, ''), 'plugin'))
 
     has :__classx_pluggable_events_of,
@@ -100,7 +102,7 @@ module ClassX
           end
           return result
         rescue NameError => e
-          raise LoadError, "module: #{name} is not found."
+          raise PluginLoadError, "module: #{name} is not found."
         end
       end
     end
