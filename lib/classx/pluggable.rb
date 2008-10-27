@@ -24,6 +24,7 @@ module ClassX
         }
 
     def add_event name, plugin, meth
+      name = name.to_s
       self.__classx_pluggable_events_of[name] ||= []
       self.__classx_pluggable_events_of[name] << { :plugin => plugin, :method => meth }
     end
@@ -45,7 +46,7 @@ module ClassX
     end
 
     def call_event name, *args
-      # name = name.to_s
+      name = name.to_s
       if events = self.__classx_pluggable_events_of[name]
         events.map do |event|
           event[:plugin].__send__(event[:method], *args)

@@ -32,13 +32,15 @@ class TestRunner
     class SetupFixture
       include ClassX
       include ClassX::Pluggable::Plugin
+      include ClassX::Pluggable::Plugin::AutoRegister
 
-      define_events({
-        :BEFORE_ALL => :on_before_all,
-        :AFTER_ALL  => :on_after_all,
-      })
-
-      private
+      # without C::P::P::AutoRegister
+      # you can do followings:
+      #
+      # define_events({
+      #   :BEFORE_ALL => :on_before_all,
+      #   :AFTER_ALL  => :on_after_all,
+      # })
 
       def on_before_all c
           c.logger.info "Setup Fixture"
@@ -52,15 +54,16 @@ class TestRunner
     class TestTimer
       include ClassX
       include ClassX::Pluggable::Plugin
+      include ClassX::Pluggable::Plugin::AutoRegister
 
-      define_events({
-        :BEFORE_ALL     => :on_before_all,
-        :AFTER_ALL      => :on_after_all,
-        :BEFORE_EACH  => :on_before_each,
-        :AFTER_EACH   => :on_after_each,
-      })
-
-      private
+      # without C::P::P::AutoRegister
+      # you can do followings:
+      #
+      #   :BEFORE_ALL     => :on_before_all,
+      #   :AFTER_ALL      => :on_after_all,
+      #   :BEFORE_EACH  => :on_before_each,
+      #   :AFTER_EACH   => :on_after_each,
+      # })
 
       def on_before_all c
         @test_suite_timer = Time.now

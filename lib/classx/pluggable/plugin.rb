@@ -50,6 +50,17 @@ module ClassX
           add_event(event, meth)
         end
       end
+
+      module AutoRegister
+        EVENT_REGEX = /\Aon_(.+)\z/
+
+        def register
+          methods.map {|meth| meth.to_s }.grep(EVENT_REGEX).each do |meth|
+            meth =~ EVENT_REGEX
+            add_event $1.upcase, meth
+          end
+        end
+      end
     end
   end
 end
