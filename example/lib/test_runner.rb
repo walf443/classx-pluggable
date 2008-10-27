@@ -36,13 +36,23 @@ class TestRunner
       def register
         # dummy
         self.context.add_event(:BEFORE_ALL, self) do |c|
-          c.logger.info "Setup Fixture"
+          on_before_all c
         end
 
         # dummy
         self.context.add_event(:AFTER_ALL, self) do |c|
-          c.logger.info 'Clear Fixture'
+          on_after_all c
         end
+      end
+
+      private
+
+      def on_before_all c
+          c.logger.info "Setup Fixture"
+      end
+
+      def on_after_all c
+          c.logger.info "Clear Fixture"
       end
     end
 
@@ -52,22 +62,40 @@ class TestRunner
 
       def register
         self.context.add_event(:BEFORE_ALL, self) do |c|
-          @test_suite_timer = Time.now
+          on_before_all c
         end
         self.context.add_event(:AFTER_ALL, self) do |c|
-          diff = Time.now - @test_suite_timer
-          c.logger.info "total: #{diff.to_f} sec."
+          on_after_all c
         end
 
         self.context.add_event(:BEFORE_EACH, self) do |c|
-          @test_timer = Time.now
+          on_before_each c
         end
 
         self.context.add_event(:AFTER_EACH, self) do |c|
+          on_after_each c
+        end
+      end
+
+      private
+
+      def on_before_all c
+        @test_suite_timer = Time.now
+      end
+
+      def on_after_all c
+        diff = Time.now - @test_suite_timer
+        c.logger.info "total: #{diff.to_f} sec."
+      end
+
+      def on_before_each c
+          @test_timer = Time.now
+      end
+
+      def on_after_each c
           diff = Time.now - @test_timer
 
           c.logger.info "test: #{diff.to_f} sec."
-        end
       end
     end
   end
