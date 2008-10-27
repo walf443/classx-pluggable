@@ -8,7 +8,7 @@ module ClassX
 
     DEFAULT_PLUGIN_DIR = File.expand_path(File.join(File.dirname(__FILE__), File.basename(__FILE__).sub(/\.rb$/, ''), 'plugin'))
 
-    has :__classx_pluggable_events_of, 
+    has :__classx_pluggable_events_of,
         :lazy    => true,
         :no_cmd_option  => true,
         :default => proc { Hash.new }
@@ -23,9 +23,9 @@ module ClassX
           ].uniq
         }
 
-    def add_event name, plugin, &block
+    def add_event name, plugin, meth
       self.__classx_pluggable_events_of[name] ||= []
-      self.__classx_pluggable_events_of[name] << { :plugin => plugin, :callback => block }
+      self.__classx_pluggable_events_of[name] << { :plugin => plugin, :method => meth }
     end
 
     def load_plugins plugins
@@ -48,7 +48,7 @@ module ClassX
       # name = name.to_s
       if events = self.__classx_pluggable_events_of[name]
         events.map do |event|
-          event[:callback].call(*args)
+          event[:plugin].__send__(event[:method], *args)
         end
       else
         []

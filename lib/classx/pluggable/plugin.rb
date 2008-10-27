@@ -10,9 +10,11 @@ module ClassX
       # Abstract method for calling from context instance automatically that you should implement like followings:
       #
       # def register
-      #   self.context.add_event('SOME_EVENT', self) do |args|
-      #     # do something
-      #   end
+      #   add_event('SOME_EVENT', 'on_some_event')
+      # end
+      #
+      # def on_some_event
+      #   # do something.
       # end
       #
       def register
@@ -25,6 +27,17 @@ module ClassX
         "#{self.class}: #{self.to_hash}"
       end
 
+      private
+
+      def add_event name, meth
+        self.context.add_event(name, self, meth)
+      end
+
+      def add_events hash
+        hash.each do |event, meth|
+          add_event(event, meth)
+        end
+      end
     end
   end
 end

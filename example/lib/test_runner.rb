@@ -22,10 +22,10 @@ class TestRunner
 
   # it's dummy
   def _do_test tc
-    call_event(:BEFORE_EACH, self)
+    call_event(:BEFORE_EACH, self, tc)
 
     sleep(0.1)
-    call_event(:AFTER_EACH, self)
+    call_event(:AFTER_EACH, self, tc)
   end
 
   module Plugin
@@ -34,15 +34,10 @@ class TestRunner
       include ClassX::Pluggable::Plugin
 
       def register
-        # dummy
-        self.context.add_event(:BEFORE_ALL, self) do |c|
-          on_before_all c
-        end
-
-        # dummy
-        self.context.add_event(:AFTER_ALL, self) do |c|
-          on_after_all c
-        end
+        add_events({
+          :BEFORE_ALL => :on_before_all,
+          :AFTER_ALL  => :on_after_all,
+        })
       end
 
       private
@@ -61,20 +56,12 @@ class TestRunner
       include ClassX::Pluggable::Plugin
 
       def register
-        self.context.add_event(:BEFORE_ALL, self) do |c|
-          on_before_all c
-        end
-        self.context.add_event(:AFTER_ALL, self) do |c|
-          on_after_all c
-        end
-
-        self.context.add_event(:BEFORE_EACH, self) do |c|
-          on_before_each c
-        end
-
-        self.context.add_event(:AFTER_EACH, self) do |c|
-          on_after_each c
-        end
+        add_events({
+          :BEFORE_ALL   => :on_before_all,
+          :AFTER_ALL    => :on_after_all,
+          :BEFORE_EACH  => :on_before_each,
+          :AFTER_EACH   => :on_after_each,
+        })
       end
 
       private
@@ -88,14 +75,14 @@ class TestRunner
         c.logger.info "total: #{diff.to_f} sec."
       end
 
-      def on_before_each c
+      def on_before_each c, test
           @test_timer = Time.now
       end
 
-      def on_after_each c
+      def on_after_each c, test
           diff = Time.now - @test_timer
 
-          c.logger.info "test: #{diff.to_f} sec."
+          c.logger.info "test #{test}: #{diff.to_f} sec."
       end
     end
   end
