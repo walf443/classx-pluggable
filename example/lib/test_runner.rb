@@ -33,12 +33,10 @@ class TestRunner
       include ClassX
       include ClassX::Pluggable::Plugin
 
-      def register
-        add_events({
-          :BEFORE_ALL => :on_before_all,
-          :AFTER_ALL  => :on_after_all,
-        })
-      end
+      define_events({
+        :BEFORE_ALL => :on_before_all,
+        :AFTER_ALL  => :on_after_all,
+      })
 
       private
 
@@ -55,14 +53,12 @@ class TestRunner
       include ClassX
       include ClassX::Pluggable::Plugin
 
-      def register
-        add_events({
-          :BEFORE_ALL   => :on_before_all,
-          :AFTER_ALL    => :on_after_all,
-          :BEFORE_EACH  => :on_before_each,
-          :AFTER_EACH   => :on_after_each,
-        })
-      end
+      define_events({
+        :BEFORE_ALL     => :on_before_all,
+        :AFTER_ALL      => :on_after_all,
+        :BEFORE_EACH  => :on_before_each,
+        :AFTER_EACH   => :on_after_each,
+      })
 
       private
 

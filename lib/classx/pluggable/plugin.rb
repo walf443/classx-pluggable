@@ -7,6 +7,14 @@ module ClassX
 
       has :context
 
+      module ClassMethods
+        def define_events hash
+          define_method :register do
+            add_events hash
+          end
+        end
+      end
+
       # Abstract method for calling from context instance automatically that you should implement like followings:
       #
       # def register
@@ -28,6 +36,10 @@ module ClassX
       end
 
       private
+
+      def self.included klass
+        klass.extend(ClassMethods)
+      end
 
       def add_event name, meth
         self.context.add_event(name, self, meth)
