@@ -44,6 +44,22 @@ in your plugin class
     end
   end
 
+or it's easy to defining with ClassX::Pluggable::Plugin
+
+  module YourApp
+    class Plugin
+      include ClassX
+      include ClassX::Pluggable::Plugin
+      include ClassX::Pluggable::Plugin::AutoRegister
+
+      class SomePlugin < Plugin
+        def on_setup c
+          # do some thing.
+        end
+      end
+    end
+  end
+
 and, on your start up script.
 
   app = YourApp::Context.new
