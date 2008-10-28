@@ -59,11 +59,20 @@ module ClassX
     end
 
     # invoke hook BEFORE_xxxx and yield block and invoke hook AFTER_xxxx.
-    def around_event name, *args
+    def around_event name, *args, &block
       name = name.to_s
+      around_name = "AROUND_#{name}"
 
       call_event("BEFORE_#{name}", *args)
-      yield
+      if events = self.__classx_pluggable_events_of[around_name]
+        procs = []
+        procs << block
+        index = 0
+        # last_event = events.pop
+        nested_proc = events.inject(block) {|bl, event| proc { event[:plugin].__send__(event[:method], *args, &bl ) } }
+        nested_proc.call
+        # last_event[:plugin].__send__(last_event[:method], *args, &nested_proc)
+      end
       call_event("AFTER_#{name}", *args)
     end
 

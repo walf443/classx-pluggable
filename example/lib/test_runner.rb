@@ -41,12 +41,10 @@ class TestRunner
       #   :AFTER_ALL  => :on_after_all,
       # })
 
-      def on_before_all c
-          c.logger.info "Setup Fixture"
-      end
-
-      def on_after_all c
-          c.logger.info "Clear Fixture"
+      def on_around_all c
+        c.logger.info "#{self.class}: Setup Fixture"
+        yield
+        c.logger.info "#{self.class}: Clear Fixture"
       end
     end
 
@@ -64,23 +62,24 @@ class TestRunner
       #   :AFTER_EACH   => :on_after_each,
       # })
 
-      def on_before_all c
+      def on_around_all c
+        c.logger.info "#{self.class}: total: start timer"
         @test_suite_timer = Time.now
-      end
 
-      def on_after_all c
+        yield
+
         diff = Time.now - @test_suite_timer
-        c.logger.info "total: #{diff.to_f} sec."
+        c.logger.info "#{self.class}: total: #{diff.to_f} sec."
       end
 
-      def on_before_each c, test
+      def on_around_each c, test
+          c.logger.info "#{self.class}: test #{test}: start timer"
           @test_timer = Time.now
-      end
+          yield
 
-      def on_after_each c, test
           diff = Time.now - @test_timer
 
-          c.logger.info "test #{test}: #{diff.to_f} sec."
+          c.logger.info "#{self.class}: test #{test}: #{diff.to_f} sec."
       end
     end
   end
