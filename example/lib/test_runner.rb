@@ -37,8 +37,7 @@ class TestRunner
       # you can do followings:
       #
       # define_events({
-      #   :BEFORE_ALL => :on_before_all,
-      #   :AFTER_ALL  => :on_after_all,
+      #   :AROUND_ALL => :on_around_all,
       # })
 
       def on_around_all c
@@ -56,10 +55,8 @@ class TestRunner
       # without C::P::P::AutoRegister
       # you can do followings:
       #
-      #   :BEFORE_ALL     => :on_before_all,
-      #   :AFTER_ALL      => :on_after_all,
-      #   :BEFORE_EACH  => :on_before_each,
-      #   :AFTER_EACH   => :on_after_each,
+      #   :AROUND_ALL     => :on_around_all,
+      #   :AROUND_EACH  => :on_arond_each,
       # })
 
       def on_around_all c
