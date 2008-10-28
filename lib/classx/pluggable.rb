@@ -15,6 +15,11 @@ module ClassX
         :no_cmd_option  => true,
         :default => proc { Hash.new }
 
+    has :__classx_pluggable_check_event,
+      :default  => false,
+      :optional => true,
+      :desc     => "only add events that define before add_event."
+
     has :__classx_pluggable_plugin_dir,
         :lazy   => true,
         :no_cmd_option  => true,
@@ -27,7 +32,11 @@ module ClassX
 
     def add_event name, plugin, meth
       name = name.to_s
-      self.__classx_pluggable_events_of[name] ||= []
+      if self.__classx_pluggable_check_event && !self.__classx_pluggable_events_of.keys.include?(name)
+        raise "#{name.inspect} should be declared before call add_event. not in #{self.__classx_pluggable_events_of.keys.inspect}"
+      else
+        self.__classx_pluggable_events_of[name] ||= []
+      end
       self.__classx_pluggable_events_of[name] << { :plugin => plugin, :method => meth }
     end
 
