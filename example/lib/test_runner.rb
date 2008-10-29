@@ -55,8 +55,9 @@ class TestRunner
       # without C::P::P::AutoRegister
       # you can do followings:
       #
+      # define_events({
       #   :AROUND_ALL     => :on_around_all,
-      #   :AROUND_EACH  => :on_arond_each,
+      #   :AROUND_EACH    => :on_arond_each,
       # })
 
       def on_around_all c
