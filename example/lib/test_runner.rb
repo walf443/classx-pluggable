@@ -46,9 +46,9 @@ class TestRunner
           has :logger
         end
 
-        param[:logger].info "#{self.class}: Setup Fixture"
+        param.logger.info "#{self.class}: Setup Fixture"
         yield
-        param[:logger].info "#{self.class}: Clear Fixture"
+        param.logger.info "#{self.class}: Clear Fixture"
       end
     end
 
@@ -70,13 +70,13 @@ class TestRunner
           has :logger
         end
 
-        param[:logger].info "#{self.class}: total: start timer"
+        param.logger.info "#{self.class}: total: start timer"
         @test_suite_timer = Time.now
 
         yield
 
         diff = Time.now - @test_suite_timer
-        param[:logger].info "#{self.class}: total: #{diff.to_f} sec."
+        param.logger.info "#{self.class}: total: #{diff.to_f} sec."
       end
 
       def on_around_each param
@@ -85,13 +85,13 @@ class TestRunner
           has :test
         end
 
-        param[:logger].info "#{self.class}: test #{param[:test]}: start timer"
+        param.logger.info "#{self.class}: test #{param.test}: start timer"
         @test_timer = Time.now
         yield
 
         diff = Time.now - @test_timer
 
-        param[:logger].info "#{self.class}: test #{param[:test]}: #{diff.to_f} sec."
+        param.logger.info "#{self.class}: test #{param.test}: #{diff.to_f} sec."
       end
     end
   end
