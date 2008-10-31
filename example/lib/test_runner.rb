@@ -1,4 +1,5 @@
 require 'classx'
+require 'classx/validate'
 $LOAD_PATH.unshift(File.expand_path(File.join(File.dirname(__FILE__), '../../lib')))
 require 'classx/pluggable'
 require 'classx/pluggable/plugin'
@@ -11,7 +12,7 @@ class TestRunner
   has :test_cases
 
   def run
-    around_event(:ALL, self) do
+    around_event(:ALL, :logger => logger) do
 
       test_cases.each do |tc|
         _do_test(tc)
@@ -22,7 +23,7 @@ class TestRunner
 
   # it's dummy
   def _do_test tc
-    around_event(:EACH, self, tc) do
+    around_event(:EACH, :logger => logger, :test => tc) do
       sleep(0.1)
     end
   end
@@ -40,10 +41,14 @@ class TestRunner
       #   :AROUND_ALL => :on_around_all,
       # })
 
-      def on_around_all c
-        c.logger.info "#{self.class}: Setup Fixture"
+      def on_around_all param
+        param = ClassX::Validate.validate param do
+          has :logger
+        end
+
+        param[:logger].info "#{self.class}: Setup Fixture"
         yield
-        c.logger.info "#{self.class}: Clear Fixture"
+        param[:logger].info "#{self.class}: Clear Fixture"
       end
     end
 
@@ -60,24 +65,33 @@ class TestRunner
       #   :AROUND_EACH    => :on_arond_each,
       # })
 
-      def on_around_all c
-        c.logger.info "#{self.class}: total: start timer"
+      def on_around_all param
+        param = ClassX::Validate.validate param do
+          has :logger
+        end
+
+        param[:logger].info "#{self.class}: total: start timer"
         @test_suite_timer = Time.now
 
         yield
 
         diff = Time.now - @test_suite_timer
-        c.logger.info "#{self.class}: total: #{diff.to_f} sec."
+        param[:logger].info "#{self.class}: total: #{diff.to_f} sec."
       end
 
-      def on_around_each c, test
-          c.logger.info "#{self.class}: test #{test}: start timer"
-          @test_timer = Time.now
-          yield
+      def on_around_each param
+        param = ClassX::Validate.validate param do
+          has :logger
+          has :test
+        end
 
-          diff = Time.now - @test_timer
+        param[:logger].info "#{self.class}: test #{param[:test]}: start timer"
+        @test_timer = Time.now
+        yield
 
-          c.logger.info "#{self.class}: test #{test}: #{diff.to_f} sec."
+        diff = Time.now - @test_timer
+
+        param[:logger].info "#{self.class}: test #{param[:test]}: #{diff.to_f} sec."
       end
     end
   end
