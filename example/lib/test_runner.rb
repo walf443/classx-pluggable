@@ -122,22 +122,32 @@ class TestRunner
 end
 
 if $0 == __FILE__
-  app = TestRunner.new(
-    :test_cases => [:foo, :bar, :baz],
-    :log_level => 'debug',
-    :__classx_pluggable_check_event => true,
-    :__classx_pluggable_events_of => {
-      "BEFORE_EACH" => [],
-      "AROUND_ALL" => [],
-      "AROUND_EACH" => [],
-    }
-  ) # dummy
-  app.load_plugins([
-    { :module => TestRunner::Plugin::SetupFixture, },
-    { :module => "TestRunner::Plugin::TestTimer", },
-    { :module => "TestRunner::Plugin::TestInfo", :config => { :template => "start test %s" }},
-    { :module => "TestRunner::Plugin::TestInfo", :config => { :template => "you can also output other info for %s" }},
-  ])
+
+  require 'yaml'
+  yaml = YAML.load(<<-END_OF_YAML)
+  ---
+  global:
+    log_level: debug
+    check_events: true
+    events:
+      - BEFORE_EACH
+      - AROUND_ALL
+      - AROUND_EACH
+
+  plugins:
+    - module: TestRunner::Plugin::SetupFixture
+    - module: TestRunner::Plugin::TestTimer
+    - module: TestRunner::Plugin::TestInfo
+      config:
+        template: start test %s
+    - module: TestRunner::Plugin::TestInfo
+      config:
+        template: you can also ouput other info for %s
+
+  END_OF_YAML
+
+  app = TestRunner.new(yaml["global"].merge({ :test_cases => [:foo, :bar, :baz]})) # dummy
+  app.load_plugins(yaml["plugins"])
 
   app.run
 
