@@ -136,11 +136,11 @@ if $0 == __FILE__
 
   plugins:
     - module: TestRunner::Plugin::SetupFixture
-    - module: TestRunner::Plugin::TestTimer
-    - module: TestRunner::Plugin::TestInfo
+    - module: +TestTimer  # same means of TestRunner::Plugin::TestTimer
+    - module: +TestInfo
       config:
         template: start test %s
-    - module: TestRunner::Plugin::TestInfo
+    - module: +TestInfo
       config:
         template: you can also ouput other info for %s
 

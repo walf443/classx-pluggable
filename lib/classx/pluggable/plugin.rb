@@ -31,8 +31,8 @@ module ClassX
 
       def inspect
         hash = self.to_hash
-        hash.delete(:context)
-        "#{self.class}: #{self.to_hash}"
+        hash.delete("context")
+        "#{self.class}: #{hash.inspect}"
       end
 
       private

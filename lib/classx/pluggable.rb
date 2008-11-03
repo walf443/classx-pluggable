@@ -60,10 +60,10 @@ module ClassX
       component = OpenStruct.new(hash)
       mod = component_class_get(type, component.module)
       component.config ||= {}
-      original_config = component.config.dup
       component.config[:context] = self
-      mod.new(component.config).register
-      logger.debug("ClassX::Pluggable: loaded #{type} #{component.module}, config=#{original_config.inspect}")
+      instance = mod.new(component.config)
+      instance.register
+      logger.debug("ClassX::Pluggable: loaded #{type} #{component.module}, config=#{instance.inspect}")
     end
 
     def call_event name, *args
@@ -120,13 +120,19 @@ module ClassX
       when ::Class
         return name
       else
-        name_spaces = name.split(/::/)
-        result = ::Object
         begin
-          name_spaces.each do |const|
-            result = result.const_get(const)
+          if name =~ /\A\+(.+)\z/
+              mod_name = $1
+              base = self.class.const_get(type.capitalize)
+              base.const_get(mod_name)
+          else
+            name_spaces = name.split(/::/)
+            result = ::Object
+            name_spaces.each do |const|
+              result = result.const_get(const)
+            end
+            return result
           end
-          return result
         rescue NameError => e
           raise PluginLoadError, "module: #{name} is not found."
         end
