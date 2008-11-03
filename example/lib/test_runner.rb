@@ -94,6 +94,23 @@ class TestRunner
         param.logger.info "#{self.class}: test #{param.test}: #{diff.to_f} sec."
       end
     end
+
+    class TestInfo
+      include ClassX
+      include ClassX::Pluggable::Plugin
+      include ClassX::Pluggable::Plugin::AutoRegister
+
+      has :template
+
+      def on_before_each param
+        param = ClassX::Validate.validate param do
+          has :logger
+          has :test
+        end
+
+        param.logger.info "#{self.class}: #{self.template % [param.test]}"
+      end
+    end
   end
 end
 
@@ -103,6 +120,7 @@ if $0 == __FILE__
     :log_level => 'debug',
     :__classx_pluggable_check_event => true,
     :__classx_pluggable_events_of => {
+      "BEFORE_EACH" => [],
       "AROUND_ALL" => [],
       "AROUND_EACH" => [],
     }
@@ -110,6 +128,8 @@ if $0 == __FILE__
   app.load_plugins([
     { :module => TestRunner::Plugin::SetupFixture, },
     { :module => "TestRunner::Plugin::TestTimer", },
+    { :module => "TestRunner::Plugin::TestInfo", :config => { :template => "start test %s" }},
+    { :module => "TestRunner::Plugin::TestInfo", :config => { :template => "you can also output other info for %s" }},
   ])
 
   app.run
