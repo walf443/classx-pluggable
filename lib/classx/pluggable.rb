@@ -124,5 +124,11 @@ module ClassX
         end
       end
     end
+
+    # It's useful for testing.
+    class MockContext
+      include ClassX
+      include ClassX::Pluggable
+    end
   end
 end

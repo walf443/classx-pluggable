@@ -5,7 +5,7 @@ module ClassX
     module Plugin
       extend ClassX::Attributes
 
-      has :context
+      has :context, :kind_of => ClassX::Pluggable
 
       module ClassMethods
         def define_events hash

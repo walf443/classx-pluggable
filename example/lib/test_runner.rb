@@ -77,6 +77,8 @@ class TestRunner
 
         diff = Time.now - @test_suite_timer
         param.logger.info "#{self.class}: total: #{diff.to_f} sec."
+
+        diff
       end
 
       def on_around_each param
@@ -92,6 +94,8 @@ class TestRunner
         diff = Time.now - @test_timer
 
         param.logger.info "#{self.class}: test #{param.test}: #{diff.to_f} sec."
+
+        diff
       end
     end
 
@@ -108,7 +112,10 @@ class TestRunner
           has :test
         end
 
-        param.logger.info "#{self.class}: #{self.template % [param.test]}"
+        info = self.template % [ param.test ]
+        param.logger.info "#{self.class}: #{info}"
+
+        info
       end
     end
   end
@@ -133,4 +140,20 @@ if $0 == __FILE__
   ])
 
   app.run
+
+  # example of testing plugin
+  require 'spec'
+  require 'stringio'
+  describe TestRunner::Plugin::TestInfo do
+    before do
+      @plugin = TestRunner::Plugin::TestInfo.new({
+        :context => ClassX::Pluggable::MockContext.new,
+        :template => "test is %s"
+      })
+    end
+
+    it "should hoook :BEFORE_EACH" do
+      @plugin.on_before_each(:logger => Logger.new(StringIO.new), :test => "hoge").should == "test is hoge"
+    end
+  end
 end
