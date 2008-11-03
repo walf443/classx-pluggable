@@ -57,7 +57,7 @@ module ClassX
     end
 
     def load_component type, hash
-      component = OpenStruct.new(hash)
+      component = OpenStruct.new(hash.dup)
       mod = component_class_get(type, component.module)
       component.config ||= {}
       component.config[:context] = self
