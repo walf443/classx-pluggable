@@ -120,19 +120,20 @@ module ClassX
       when ::Class
         return name
       else
+        mod_name = nil
+        if name =~ /\A\+([\w:]+)\z/
+          target_name = $1
+          mod_name = [ self.class, type.capitalize, target_name ].join("::")
+        else
+          mod_name = name
+        end
         begin
-          if name =~ /\A\+(.+)\z/
-              mod_name = $1
-              base = self.class.const_get(type.capitalize)
-              base.const_get(mod_name)
-          else
-            name_spaces = name.split(/::/)
-            result = ::Object
-            name_spaces.each do |const|
-              result = result.const_get(const)
-            end
-            return result
+          name_spaces = mod_name.split(/::/)
+          result = ::Object
+          name_spaces.each do |const|
+            result = result.const_get(const)
           end
+          return result
         rescue NameError => e
           raise PluginLoadError, "module: #{name} is not found."
         end
