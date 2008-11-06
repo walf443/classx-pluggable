@@ -15,9 +15,9 @@ in your context class.
       include ClassX::Pluggable
 
       def run
-        call_event("SETUP", self)
+        call_event("SETUP", {})
         # you app
-        call_event("TEARDOWN", self)
+        call_event("TEARDOWN", {})
       end
     end
   end
@@ -36,8 +36,8 @@ in your plugin class
           add_event("SETUP", :on_setup)
         end
 
-        def on_setup c
-          # c is YourApp::Context's instance.
+        def on_setup param
+          # param is Hash
           # hooked setup
         end
       end
@@ -53,7 +53,7 @@ or it's easy to defining with ClassX::Pluggable::Plugin
       include ClassX::Pluggable::Plugin::AutoRegister
 
       class SomePlugin < Plugin
-        def on_setup c
+        def on_setup param
           # do some thing.
         end
       end
