@@ -2,6 +2,44 @@ require 'classx'
 require 'ostruct'
 
 module ClassX
+  # in your context class.
+  #
+  #   require 'classx'
+  #   require 'classx/pluggable'
+  #   class YourApp
+  #     include ClassX
+  #     include ClassX::Pluggable
+  #
+  #     def run
+  #       call_event("SETUP", {})
+  #       # you app
+  #       call_event("TEARDOWN", {})
+  #     end
+  #
+  #   end
+  #
+  # in your plugin class
+  #
+  #   require 'classx'
+  #   require 'classx/pluggable'
+  #   class YourApp
+  #     class Plugin
+  #       include ClassX
+  #       include ClassX::Pluggable::Plugin
+  #
+  #       class SomePlugin < Plugin
+  #         def register
+  #           add_event("SETUP", :on_setup)
+  #         end
+  #
+  #         def on_setup param
+  #           # param is Hash
+  #           # hooked setup
+  #         end
+  #       end
+  #     end
+  #   end
+  #
   module Pluggable
     extend ClassX::Attributes
     extend ClassX::Role::Logger
@@ -29,6 +67,8 @@ module ClassX
       :desc    => "hook point for #{self}'s instance",
       :default => proc { [] }
 
+    # register plugin and method to hook point.
+    #
     def add_event name, plugin, meth
       name = name.to_s
       if self.check_events && !self.events.include?(name)
@@ -39,10 +79,24 @@ module ClassX
       self.__classx_pluggable_events_of[name] << { :plugin => plugin, :method => meth }
     end
 
+    # load plugins.
+    #
+    #   app.load_plugins([
+    #     { :module => "YourApp::Plugin::Foo", :confiig => { :some_config => "foo"} },
+    #     { :module => "+Bar", :confiig => { } }, # It's same meaning of YourApp::Plugin::Bar
+    #   ])
+    #
     def load_plugins plugins
       load_components("plugin", plugins)
     end
 
+    # if you customize Plugin name space. you can use this instead of load_plugins
+    #
+    #  app.load_components('engine', [
+    #     { :module => "YourApp::Engine::Foo", :confiig => { :some_config => "foo"} },
+    #     { :module => "+Bar", :confiig => { } }, # It's same meaning of YourApp::Engine::Bar
+    #  ])
+    #
     def load_components type, components
       components.each do |component|
         load_component type, component
@@ -59,6 +113,7 @@ module ClassX
       logger.debug("ClassX::Pluggable: loaded #{type} #{component.module}, config=#{instance.inspect}")
     end
 
+    # invoke registered event of +name+ with +args+. and return array of result each callback.
     def call_event name, *args
       name = name.to_s
       if events = self.__classx_pluggable_events_of[name]
@@ -70,7 +125,7 @@ module ClassX
       end
     end
 
-    # invoke hook BEFORE_xxxx and yield block and invoke hook AFTER_xxxx.
+    # invoke registered event of BEFORE_xxxx and yield block and invoke hook AFTER_xxxx.
     def call_event_around name, *args, &block
       name = name.to_s
       around_name = "AROUND_#{name}"

@@ -9,16 +9,14 @@ in your context class.
 
   require 'classx'
   require 'classx/pluggable'
-  module YourApp
-    class Context
-      include ClassX
-      include ClassX::Pluggable
+  class YourApp
+    include ClassX
+    include ClassX::Pluggable
 
-      def run
-        call_event("SETUP", {})
-        # you app
-        call_event("TEARDOWN", {})
-      end
+    def run
+      call_event("SETUP", {})
+      # you app
+      call_event("TEARDOWN", {})
     end
   end
 
@@ -26,7 +24,7 @@ in your plugin class
 
   require 'classx'
   require 'classx/pluggable'
-  module YourApp
+  class YourApp
     class Plugin
       include ClassX
       include ClassX::Pluggable::Plugin
@@ -46,7 +44,7 @@ in your plugin class
 
 or it's easy to defining with ClassX::Pluggable::Plugin
 
-  module YourApp
+  class YourApp
     class Plugin
       include ClassX
       include ClassX::Pluggable::Plugin
@@ -62,7 +60,7 @@ or it's easy to defining with ClassX::Pluggable::Plugin
 
 and, on your start up script.
 
-  app = YourApp::Context.new
+  app = YourApp.new
   app.load_plugins([
     { :module => YourApp::Plugin::SomePlugin, :config => {} },
   ])
