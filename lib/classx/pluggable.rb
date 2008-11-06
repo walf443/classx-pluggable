@@ -71,7 +71,7 @@ module ClassX
     end
 
     # invoke hook BEFORE_xxxx and yield block and invoke hook AFTER_xxxx.
-    def around_event name, *args, &block
+    def call_event_around name, *args, &block
       name = name.to_s
       around_name = "AROUND_#{name}"
 

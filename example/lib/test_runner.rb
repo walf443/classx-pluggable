@@ -14,7 +14,7 @@ class TestRunner
   has :test_cases
 
   def run
-    around_event(:ALL, :logger => logger) do
+    call_event_around(:ALL, :logger => logger) do
 
       test_cases.each do |tc|
         _do_test(tc)
@@ -25,7 +25,7 @@ class TestRunner
 
   # it's dummy
   def _do_test tc
-    around_event(:EACH, :logger => logger, :test => tc) do
+    call_event_around(:EACH, :logger => logger, :test => tc) do
       sleep(0.1)
     end
   end
