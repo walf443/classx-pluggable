@@ -8,21 +8,14 @@ module ClassX
 
     class PluginLoadError < ::Exception; end
 
-    DEFAULT_PLUGIN_DIR = File.expand_path(File.join(File.dirname(__FILE__), File.basename(__FILE__).sub(/\.rb$/, ''), 'plugin'))
-
     has :__classx_pluggable_events_of,
         :lazy    => true,
         :no_cmd_option  => true,
         :default => proc {|mine| mine.events.inject({}) {|h,event| h[event] = []; h } }
 
     has :plugin_dir,
-        :lazy   => true,
-        :default => proc {
-          [
-            File.expand_path(File.join(File.dirname(__FILE__), File.basename(__FILE__).sub(/\.rb$/, ''), 'plugin')),
-            DEFAULT_PLUGIN_DIR
-          ].uniq
-        }
+        :optional => true,
+        :kind_of  => Array
 
     has :check_events,
       :default  => false,
@@ -58,7 +51,7 @@ module ClassX
 
     def load_component type, hash
       component = OpenStruct.new(hash.dup)
-      mod = component_class_get(type, component.module)
+      mod = self.class.component_class_get(type, component.module, { :plugin_dir => self.plugin_dir })
       component.config ||= {}
       component.config[:context] = self
       instance = mod.new(component.config)
@@ -95,49 +88,83 @@ module ClassX
 
     private
 
-    def after_init
-      self.plugin_dir.each do |path|
-        Dir.glob("#{path}/**/*.rb").each do |file|
-          guess_autoload(file)
-        end
+    module Util
+      def module2path mod
+        mod.split(/::/).map { |s|
+          s.gsub(/([A-Z][a-z]+)(?=[A-Z][a-z]*?)/, '\1_').gsub(/([A-Z])(?=[A-Z][a-z]+)/, '\1_').downcase
+        }.join(File::SEPARATOR)
       end
+
+      def nested_const_get mod
+        name_spaces = mod.split(/::/)
+        result = ::Object
+        name_spaces.each do |const|
+          result = result.const_get(const)
+        end
+        return result
+      end
+
+      def nested_autoload mod, path
+        name_spaces = mod.split(/::/)
+        target = name_spaces.pop
+        tmp = ::Object
+        name_spaces.each do |const|
+          tmp = tmp.const_get(const)
+        end
+        tmp.autoload(target, path)
+      end
+
+      module_function :module2path, :nested_const_get, :nested_autoload
     end
 
-    def guess_autoload file
-      autoload path2module(path), path
-    end
+    module ClassMethods
+      include ClassX::Pluggable::Util
 
-    def path2module path
-      path
-    end
-
-    def module2path mod
-      mod
-    end
-
-    def component_class_get type, name
-      case name
-      when ::Class
-        return name
-      else
-        mod_name = nil
-        if name =~ /\A\+([\w:]+)\z/
-          target_name = $1
-          mod_name = [ self.class, type.capitalize, target_name ].join("::")
+      def component_class_get type, name, options={}
+        case name
+        when ::Class
+          return name
         else
-          mod_name = name
-        end
-        begin
-          name_spaces = mod_name.split(/::/)
-          result = ::Object
-          name_spaces.each do |const|
-            result = result.const_get(const)
+          mod_name = nil
+          target_name = nil
+          if name =~ /\A\+([\w:]+)\z/
+            target_name = $1
+            mod_name = [ self, type.capitalize, target_name ].join("::")
+          else
+            mod_name = name
           end
-          return result
-        rescue NameError => e
-          raise PluginLoadError, "module: #{name} is not found."
+          begin
+            return nested_const_get(mod_name)
+          rescue NameError => e
+            begin
+              if options[:plugin_dir]
+                options[:plugin_dir].each do |path|
+                  begin
+                    begin
+                      self.const_get(type.capitalize).autoload(name, File.expand_path(File.join(path, module2path(target_name))))
+                    rescue LoadError => e
+                      raise ::ClassX::Pluggable::PluginLoadError, "class: #{mod_name} is not found"
+                    end
+                    return nested_const_get(mod_name)
+                  rescue NameError => e
+                    next
+                  end
+                  raise NameError, "must not happened unless your code is something wrong!!"
+                end
+              else
+                nested_autoload(mod_name, module2path(mod_name))
+                nested_const_get mod_name
+              end
+            rescue LoadError => e
+              raise ::ClassX::Pluggable::PluginLoadError, "class: #{mod_name} is not found."
+            end
+          end
         end
       end
+    end
+
+    def self.included klass
+      klass.extend ClassMethods
     end
 
     # It's useful for testing.

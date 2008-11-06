@@ -135,8 +135,8 @@ if $0 == __FILE__
       - AROUND_EACH
 
   plugins:
-    - module: TestRunner::Plugin::SetupFixture
-    - module: +TestTimer  # same means of TestRunner::Plugin::TestTimer
+    - module: TestRunner::Plugin::SetupFixture #=> autoloading TestRunner::Plugin::SetupFixture, "test_runner/plugin/setup_fixture"
+    - module: +TestTimer  # same means of TestRunner::Plugin::TestTimer #=> autoloading TestRunner::Plugin::TestTimer, "test_runner/plugin/test_timer"
     - module: +TestInfo
       config:
         template: start test %s
