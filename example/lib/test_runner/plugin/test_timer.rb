@@ -25,11 +25,11 @@ class TestRunner
         end
 
         param.logger.info "#{self.class}: total: start timer"
-        @test_suite_timer = Time.now
+        test_suite_timer = Time.now
 
         yield
 
-        diff = Time.now - @test_suite_timer
+        diff = Time.now - test_suite_timer
         param.logger.info "#{self.class}: total: #{diff.to_f} sec."
 
         diff
@@ -42,10 +42,10 @@ class TestRunner
         end
 
         param.logger.info "#{self.class}: test #{param.test}: start timer"
-        @test_timer = Time.now
+        test_timer = Time.now
         yield
 
-        diff = Time.now - @test_timer
+        diff = Time.now - test_timer
 
         param.logger.info "#{self.class}: test #{param.test}: #{diff.to_f} sec."
 
