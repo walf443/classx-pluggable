@@ -90,7 +90,7 @@ module ClassX
       load_components("plugin", plugins)
     end
 
-    # if you customize Plugin name space. you can use this instead of load_plugins
+    # if you customize Plugin name space. you can use this instead of +load_plugins+.
     #
     #  app.load_components('engine', [
     #     { :module => "YourApp::Engine::Foo", :confiig => { :some_config => "foo"} },
