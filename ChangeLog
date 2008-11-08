@@ -1,0 +1,221 @@
+commit 24bae0c9a654d82bc92cd7ab0887da0be0cbfb64
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Nov 8 17:31:45 2008 +0900
+
+    fixed doc.
+
+commit a18710a05b958ec6767ca1d45520692d1d23922f
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Nov 8 16:59:39 2008 +0900
+
+    added example spec.
+
+commit e953bcdd9c9897270901042ffaa9c2f034bd5efd
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Nov 8 16:38:29 2008 +0900
+
+    create test_runner directory.
+
+commit 95d40a3eb0e8c61bfbf328335e0be93251170346
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Nov 8 16:37:46 2008 +0900
+
+    trivial changes.
+
+commit f89521694116306068afdc43711963e1c7053769
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Nov 8 16:33:46 2008 +0900
+
+    no need to use instance variable.
+
+commit 4b928f5c1a6a9ddb2d183ffe46aa6d12e264a639
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Nov 7 08:57:31 2008 +0900
+
+    added doc.
+
+commit 409de53aca3428583ca4b6572eb74ec58e6d8c9b
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Nov 7 08:27:48 2008 +0900
+
+    fixed plagger's spell
+
+commit 481ab26c8164d2dd9ef76daa1862b30aa21e298b
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Nov 7 08:27:17 2008 +0900
+
+    fixed README.
+
+commit cd5ea112391bdc2962466c34b86d72e7a74511b6
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Nov 7 08:20:28 2008 +0900
+
+    fixed example loading conf/config.yaml as default.
+
+commit 6615d1f4bad4f8ac951211e7a06e66771633cd5c
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Nov 7 08:04:07 2008 +0900
+
+    rename method around_event to call_event_around. you can easy to find for event point with greping call_event.
+
+commit 2145538c94cc7047c0f74468fe3b5f7ea345d5f2
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Nov 7 07:54:24 2008 +0900
+
+    separete example files.
+
+commit 9a03c71d4d9f916634a15c36059bf30fa431679f
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Nov 7 07:31:43 2008 +0900
+
+    implement feature for auto loading plugin.
+
+commit 107e01ce7a0cabe7f946b3749de6cd6c12a13411
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Nov 4 08:29:45 2008 +0900
+
+    refactoring.
+
+commit 7e11c5539cff81ca012543aa08e5b2b669d04d7d
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Nov 4 08:04:59 2008 +0900
+
+    dupping for saving original config.
+
+commit c97fc9ffa9bafe9aab1af2466bf9bfeec2187479
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Nov 4 01:55:28 2008 +0900
+
+    you can specify target component as base_name + component name + "+plugin_name". ( for example. "+Hoge" is YourApp::Plugin::Hoge )
+
+commit aec0021f58c11110c73b72686c5d8bb4edebf31b
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Nov 4 01:38:37 2008 +0900
+
+    tweaked interface.
+
+commit cec519d34be81c883f2150e4778b4b547ff42dea
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Nov 4 00:48:16 2008 +0900
+
+    added testing plugin example.
+
+commit 3e9f024bf23716200a00a4bdec8b322808f07e78
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Mon Nov 3 23:19:09 2008 +0900
+
+    added plugin to example.
+
+commit 4406106bb55056fde3a7fe1f0f6f49521368d608
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Oct 31 09:40:22 2008 +0900
+
+    use method!!
+
+commit 5dd5b3206120e18ac01c17df56a7bda2c3c584ce
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Fri Oct 31 09:35:47 2008 +0900
+
+    I think it better not to use context directly.
+
+commit 187a33e4a3daf4ef07fc286d1385016c1d555c81
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Thu Oct 30 08:49:04 2008 +0900
+
+    fixed doc.
+
+commit a36478b464cd59fefc18c4380ec97a3571f8990e
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Wed Oct 29 01:24:59 2008 +0900
+
+    You can manage events in your application class. It may be prevend extending event not intentionally.
+
+commit a7a25bb08969ce9ab62444f6e77855850a0b0925
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Wed Oct 29 00:57:45 2008 +0900
+
+    fixed doc.
+
+commit 9ff373f239903d756569159b8f2ba0d119793bee
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Wed Oct 29 00:28:53 2008 +0900
+
+    You can define event with yield. It's useful to hook before and after for some event.
+
+commit f6c77aabe86111978a84dd666afc43737fe931b2
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Oct 28 07:55:42 2008 +0900
+
+    added original Exception class.
+
+commit 781f68b0244461039c51fa99dd4c09eed7ab4c22
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Oct 28 07:45:27 2008 +0900
+
+    added around_event
+
+commit d26926274ab44e2b2c05272ca4c1ed4da6874dd2
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Oct 28 07:34:51 2008 +0900
+
+    added doc for ClassX::Plugin::AutoRegister
+
+commit ce8f46a6006ed62c76ccdfd3964684a847442177
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Oct 28 00:44:46 2008 +0900
+
+    added CassX::Pluggable::Plugin::AutoRegister
+
+commit b8d748953c9c6ce53453184e36d27ebf04aaf18e
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Oct 28 00:24:41 2008 +0900
+
+    added define_event.
+
+commit 81227fc1cc165f6dbb344850f95e7d7547df3eeb
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Oct 28 00:13:15 2008 +0900
+
+    fixed doc.
+
+commit 55c572cd701fc0bc6ac7efde644027c3c67c2e2e
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Tue Oct 28 00:10:24 2008 +0900
+
+    changed Plugin API. Proc is not easy testing and debugging.
+
+commit 0d7000a3971badf43e84b540350d59fae758e716
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Mon Oct 27 23:23:12 2008 +0900
+
+    It's better to write dispatch method for testability.
+
+commit caf6e5c6567ad542cb2d293a7b7ef10d4b5dc12e
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sun Oct 26 03:02:26 2008 +0900
+
+    In this example, a plugin should inherite TestRunner::Plugin class.
+
+commit f95e4d36eb61cc6254498d7dd2a99e7e5abffb20
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Oct 25 16:43:41 2008 +0900
+
+    :module can take String.
+
+commit 6dc389dcb998ad7e2a1b6541d8ef588718423314
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Oct 25 16:38:44 2008 +0900
+
+    added docs.
+
+commit f293440cc27414be86f2ec9aa0de420aabe5a633
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Oct 25 13:45:54 2008 +0900
+
+    remove garvage.
+
+commit 1e8c86c0f53671bb18eda1044c35bd4296a2cbdc
+Author: Keiji, Yoshimi <walf443@gmail.com>
+Date:   Sat Oct 25 13:44:48 2008 +0900
+
+    initial import.
