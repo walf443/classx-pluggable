@@ -5,7 +5,7 @@ require 'stringio'
 def example_check name
   base_dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
-  target_runner = File.join(base_dir, 'example', name, 'bin', "#{name}.rb")
+  target_runner = File.join(base_dir, 'examples', name, 'bin', "#{name}.rb")
 
   describe "example", name do
     it "should not raise Exception" do
