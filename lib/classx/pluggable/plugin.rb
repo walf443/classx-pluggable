@@ -17,13 +17,13 @@ module ClassX
 
       # Abstract method for calling from context instance automatically that you should implement like followings:
       #
-      # def register
-      #   add_event('SOME_EVENT', 'on_some_event')
-      # end
+      #   def register
+      #     add_event('SOME_EVENT', 'on_some_event')
+      #   end
       #
-      # def on_some_event
-      #   # do something.
-      # end
+      #   def on_some_event
+      #     # do something.
+      #   end
       #
       def register
         raise NotImprementedError

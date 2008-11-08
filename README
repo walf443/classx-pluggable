@@ -42,7 +42,7 @@ in your plugin class
     end
   end
 
-or it's easy to defining with ClassX::Pluggable::Plugin
+or it's easy to defining with ClassX::Pluggable::Plugin::AutoRegister
 
   class YourApp
     class Plugin
