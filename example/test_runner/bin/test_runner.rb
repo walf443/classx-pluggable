@@ -9,7 +9,10 @@ config = nil
 File.open(conf) do |f|
   config = YAML.load(f.read)
 end
-app = TestRunner.new(config["global"].merge({ :test_cases => [:foo, :bar, :baz]})) # dummy
+app = TestRunner.new(config["global"].merge({
+  :test_cases => [:foo, :bar, :baz],
+  :logger => $logger ? $logger : Logger.new($stderr) # FIXME: It's for spec/example_spec.rb
+}))
 app.load_plugins(config["plugins"])
 
 app.run
