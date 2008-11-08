@@ -16,7 +16,7 @@ PKG_FILES = [ 'Rakefile' ] +
   DEFAULT_EXTRA_RDOC_FILES +
   Dir.glob('{bin,lib,test,spec,doc,tasks,script,generator,templates,extras,website}/**/*') + 
   Dir.glob('ext/**/*.{h,c,rb}') +
-  Dir.glob('examples/**/*.rb') +
+  Dir.glob('examples/**/*') +
   Dir.glob('tools/*.rb')
 
 EXTENSIONS = FileList['ext/**/extconf.rb'].to_a
