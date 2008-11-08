@@ -77,6 +77,8 @@ and, on your start up script.
 
 === Gem Installation
 
+	gem install classx-pluggable
+
 == Features/Problems
 
 CAVEAT: this project is early development. API may be vary in future.
