@@ -1,0 +1,602 @@
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head><meta content="text/html; charset=utf-8" http-equiv="Content-Type"/><title>File: ChangeLog</title><link type="text/css" href=".././rdoc-style.css" media="screen" rel="stylesheet"/><script type="text/javascript">
+// Allison template
+// Copyright 2007, 2008 Cloudburst, LLC. Licensed under the AFL 3. See the included LICENSE file.
+
+var href_base = '.././rdoc-style.css'.replace(/(.*\/).*/, '$1'); // inline js is good for something  
+
+function $(id) {
+    if (document.getElementById)
+      elem = document.getElementById(id);
+    else if ( document.all )
+      elem = eval("document.all." + id);
+    else
+      return false;
+    return elem;
+}
+
+  function toggle(id) {
+    elem = $(id);
+    elemStyle = elem.style;   
+    if (elemStyle.display == "block") {
+      elemStyle.display = "none"
+    } else {
+      elemStyle.display = "block"
+    }
+    return true;
+  }
+
+  function toggleText(id) {
+    elem = $(id)
+    if (m = elem.innerHTML.match(/(Hide)(.*)/)) {
+      elem.innerHTML = "Show" + m[2];
+    } else if (m = elem.innerHTML.match(/(Show)(.*)/)) {
+      elem.innerHTML = "Hide" + m[2];
+    }
+    return true;
+  }
+
+function span(s, klass) {
+  return '<span class="' + klass + '">' + s + '</span>';
+}
+  
+function highlightSymbols() {
+  pres = document.getElementsByTagName('pre');
+  for(var i = 0; i < pres.length; i++) {
+    pre = pres[i];
+    spans = pre.getElementsByTagName('span');
+    for(var k = 0; k < spans.length; k++) {
+      span = spans[k];
+      if (span.className.match(/ruby-identifier/)) {
+        if (span.innerHTML.match(/^:/)) {
+          span.className += " ruby-symbol";
+        }
+      }
+    }
+  }
+}
+
+ function hasClass(obj) {
+     var result = false;
+     if (obj.getAttributeNode("class") != null) {
+         result = obj.getAttributeNode("class").value;
+     }
+     return result;
+  }   
+
+ function stripe() {
+    var even = true;
+    var color = "#e4ebed";
+    var tables = document.getElementsByTagName('table');
+    if (tables.length == 0) { return; }
+    for (var h = 0; h < tables.length; h++) {
+        var trs = tables[h].getElementsByTagName("tr");
+        for (var i = 0; i < trs.length; i++) {
+          var tds = trs[i].getElementsByTagName("td");
+            for (var j = 0; j < tds.length; j++) {       
+              if (hasClass(tds[j]) != "first") {                
+              var mytd = tds[j];
+              if (even) {
+                mytd.style.backgroundColor = color;
+              }         
+            }
+          }
+          even =  ! even;
+      }
+    }
+  }
+  
+function ajaxGet(url) {
+  url = (href_base + url).replace('/./', '/')
+  var req = false;
+
+  if (window.ActiveXObject) {
+    try {
+      // stupid hack because IE7 disables local Ajax with the native xmlhttprequest object
+      // for security purposes. Yet ActiveX still works. Thanks, Microsoft. I hate you. Die.
+      req = new ActiveXObject("MSXML2.XMLHTTP.3.0");
+    } catch (e) {
+      try {
+        /* IE 6 and maybe 5, don't know, don't care */
+        req = new ActiveXObject("Msxml2.XMLHTTP");
+      } catch (e) {
+        try {
+          req = new ActiveXObject("Microsoft.XMLHTTP");
+        } catch (e) {
+          req = false;
+        }
+      }
+    }
+  }
+    
+  /* real browsers */
+  if (!req && window.XMLHttpRequest) {
+    try {
+      req = new XMLHttpRequest();
+    } catch (e) {
+      req = false;
+    }
+  } 
+  
+  if (req) {
+    req.open('GET', url, false);
+    req.send(null);
+    return req.responseText;
+  } else {
+    return "Ajax error";  
+  }
+}
+
+
+function addEvent(elm, evType, fn, useCapture) {
+	if (elm.addEventListener) {
+	  elm.addEventListener(evType, fn, useCapture);  
+  	return true;
+	} else if (elm.attachEvent) {
+  	var r = elm.attachEvent('on' + evType, fn);  
+	  return r;  
+	} else {
+  	elm['on' + evType] = fn;
+	}
+}
+
+function insertIndices() {
+  pages = ["class", "file", "method"]
+  for (x in pages) { 
+    $(pages[x]).innerHTML += ajaxGet('fr_' + pages[x] + '_index.html').replace(/(href=")/g, '$1' + href_base);
+  }
+  /* mouseoverify method links */
+  links = $('method').getElementsByTagName('a');
+  for (var x = 0; x < links.length; x++) {
+    if (m = links[x].innerHTML.match(/(.*)\s\((.*)\)/)) {
+      links[x].innerHTML = m[1] + '<br>';
+      links[x].title = m[2];
+    }
+  }
+  /* this is stupid */
+  $('class').style.display = "block";
+  $('file').style.display = "block";
+  
+  /* has to be here because IE7 does not guarantee the onLoad callback order */
+  abbreviateIndicesInner(["class", "file"], 25, "a");
+  /* same, linkTitle() depends on the class link list */
+  linkTitle();
+}
+
+function abbreviateIndices() {
+  var ids = ["defined_in", "child_of", "includes", "requires", "method", "methods"];
+  abbreviateIndicesInner(ids, 25, 'a');
+  abbreviateIndicesInner(ids, 25, 'span');
+}
+
+function abbreviateIndicesInner(indices, amount, tag) {
+  for (var x = 0; x < indices.length; x++) { 
+    var the_index = $(indices[x]);
+    if (the_index) {
+      links = the_index.getElementsByTagName(tag);
+      for (var y = 0; y < links.length; y++) {
+        var link = links[y];
+        if (link.getElementsByTagName('span').length == 0 && link.getElementsByTagName('a').length == 0) {
+          // avoid nesting
+          link.innerHTML = link.innerHTML.replace(/<br>|\n/gi, '');
+          link.title = link.innerHTML;
+          link.innerHTML = abbreviate(link.innerHTML, amount) + '<br>';
+        }
+      }
+    }
+  }
+}
+
+function linkTitle() {
+  
+  /* grab the correct title element from the index */
+  var index_page = ajaxGet('index.html');
+  title_text = index_page.match(/<title>(.*)<\/title>/m)[1];
+  document.title = title_text + " - " + document.title;
+  var p = $('header').getElementsByTagName('p')[0]
+  if (p.innerHTML.match(/^\s*$/)) {
+    p.innerHTML = title_text;
+  } else {
+    p.innerHTML = title_text + ": " + p.innerHTML;
+  }
+  
+  /* set the link properly */
+  title_link = index_page.match(/<a\s+href="(.*?)"/)[1];
+  var element = $('title');
+  var item_type = "";
+  var item_name = "";
+  if (m = element.innerHTML.match(/(Class:|Module:|File:)\s*(.*)/)) {
+    item_type = m[1];
+    item_name = m[2];
+  } else {
+    item_name = element.innerHTML;
+  }
+  element.innerHTML = '<a href="' + href_base + title_link + '">' + item_type + " " + abbreviate(item_name, 45) + '</a>';
+  element.getElementsByTagName('a')[0].title = item_name
+  
+  /* breadcrumb navigation */
+  items = item_name.split("::");
+  items_new = item_name.split("::");
+  file_links = $('class').getElementsByTagName('a');
+  for (var x = 0; x < items.length - 1; x++ ){
+    var item = items[x];
+    link = ("/classes/" + items.slice(0,x).join("/") + "/" + item + ".html").replace('//', '/');
+    regex = new RegExp(RegExp.escape(link) + '$');
+    for (var y = 0; y < file_links.length; y++) {
+      if (file_links[y].href.match(regex)) {
+         items_new[x] = '<a href="' + href_base + link + '">' + item + '</a>';
+         break;
+      }
+    }  
+  }
+  $('item_name').innerHTML = item_type + ' ' + items_new.join(" :: ");
+}
+
+function abbreviate(s, size) {
+  while (s.length > size) {
+    var old_s = s;
+    s = s.replace(/\s|\n/mg, '');
+    s = s.replace(/([A-Z])[a-z]+/m, '$1');
+    if (!s || old_s == s) {
+      return "..." + s.substring(s.length - size, s.length);
+    }
+  }
+  return s;
+}
+
+function disableSubmit(event) {
+  var keyCode = event.keyCode ? event.keyCode : event.which ? event.which : event.charCode;
+  if (keyCode == 13) {
+    return false;
+  } else {
+    return true;
+  }
+}
+  
+function filterList(id, s, event) {
+  
+  /* some weak escaping */
+  s = s.replace(/[^\w\d\.\_\-\/\:\=\[\]\?\!]/g, '');
+  s = RegExp.escape(s);
+  
+  var show_all = false;
+  if (s.match(/^\s*$/)) {
+    show_all = true;
+  }
+  
+  links = $(id).getElementsByTagName('a')
+  regex = new RegExp(s, 'i');
+  
+  for (var x = 0; x < links.length; x++) {
+    var link = links[x];
+    if (show_all) {
+      link.style.display = 'inline';
+    } else {
+       if (link.innerHTML.match(regex)) {        
+         link.style.display = 'inline';
+       } else {
+         link.style.display = 'none';
+       }
+    }
+  }
+  return true;
+}
+
+RegExp.escape = function(text) {
+  if (!arguments.callee.sRE) {
+    var specials = ['/', '.', '*', '+', '?', '|', '(', ')', '[', ']', '{', '}', '\\'];
+    arguments.callee.sRE = new RegExp(
+      '(\\' + specials.join('|\\') + ')', 'g'
+    );
+  }
+  return text.replace(arguments.callee.sRE, '\\$1');
+}
+
+function hacks() {
+  // show the spacer if necessary, 
+  divs = document.getElementsByTagName('div');
+  for(var x = 0; x < divs.length; x++) {
+    if (divs[x].className && divs[x].className.match(/top/)) {
+      document.getElementById('spacer').style.display = 'block';
+    }
+  }
+  // remove extra colons from tables
+  tds = document.getElementsByTagName('td');
+  for(var x = 0; x < tds.length; x++) {
+    str = tds[x].innerHTML
+    if (str.charAt(str.length - 1) == ":") {
+      tds[x].innerHTML = str.slice(0, str.length - 1)
+    }
+  }
+}
+
+addEvent(window, 'load', insertIndices, false);
+addEvent(window, 'load', abbreviateIndices, false);
+addEvent(window, 'load', stripe, false);
+addEvent(window, 'load', highlightSymbols, false);
+addEvent(window, 'load', hacks, false);
+</script></head><body><div id="container"><div class="curve" id="preheader_curve_0"></div><div class="curve" id="preheader_curve_1"></div><div class="curve" id="preheader_curve_2"></div><div class="curve" id="preheader_curve_3"></div><div class="curve" id="preheader_curve_4"></div><div class="curve" id="preheader_curve_5"></div><div id="header"><p>
+ChangeLog
+</p><span><h1 id="title">
+File: ChangeLog
+</h1></span>
+</div><div class="clear"></div><div id="left">
+
+
+
+
+<div id="spacer"></div><div class="navigation darker index" id="class_wrapper"><div class="list_header"><h3>All classes</h3></div><div class="list_header_link"><a onclick="toggle('class'); toggleText('class_link'); return false;" href="#" id="class_link">Hide...</a></div><div class="clear"></div><div id="class"><form><label for="filter_class">Filter:&nbsp;&nbsp;</label><input type="text" onKeyUp="return filterList('class', this.value, event);" onKeyPress="return disableSubmit(event);" id="filter_class"></input></form></div></div><div class="navigation darker index" id="file_wrapper"><div class="list_header"><h3>All files</h3></div><div class="list_header_link"><a onclick="toggle('file'); toggleText('file_link'); return false;" href="#" id="file_link">Hide...</a></div><div class="clear"></div><div id="file"><form><label for="filter_file">Filter:&nbsp;&nbsp;</label><input type="text" onKeyUp="return filterList('file', this.value, event);" onKeyPress="return disableSubmit(event);" id="filter_file"></input></form></div></div><div class="navigation darker index" id="method_wrapper"><div class="list_header"><h3>All methods</h3></div><div class="list_header_link"><a onclick="toggle('method'); toggleText('method_link'); return false;" href="#" id="method_link">Show...</a></div><div class="clear"></div><div id="method"><form><label for="filter_method">Filter:&nbsp;&nbsp;</label><input type="text" onKeyUp="return filterList('method', this.value, event);" onKeyPress="return disableSubmit(event);" id="filter_method"></input></form></div></div></div><div id="content">
+<h1 id="item_name">File: ChangeLog</h1>
+
+<div id="description"><p>
+commit 24bae0c9a654d82bc92cd7ab0887da0be0cbfb64 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Nov 8 17:31:45 2008 +0900
+</p>
+<pre>
+    fixed doc.
+</pre>
+<p>
+commit a18710a05b958ec6767ca1d45520692d1d23922f Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Nov 8 16:59:39 2008 +0900
+</p>
+<pre>
+    added example spec.
+</pre>
+<p>
+commit e953bcdd9c9897270901042ffaa9c2f034bd5efd Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Nov 8 16:38:29 2008 +0900
+</p>
+<pre>
+    create test_runner directory.
+</pre>
+<p>
+commit 95d40a3eb0e8c61bfbf328335e0be93251170346 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Nov 8 16:37:46 2008 +0900
+</p>
+<pre>
+    trivial changes.
+</pre>
+<p>
+commit f89521694116306068afdc43711963e1c7053769 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Nov 8 16:33:46 2008 +0900
+</p>
+<pre>
+    no need to use instance variable.
+</pre>
+<p>
+commit 4b928f5c1a6a9ddb2d183ffe46aa6d12e264a639 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Nov 7 08:57:31 2008 +0900
+</p>
+<pre>
+    added doc.
+</pre>
+<p>
+commit 409de53aca3428583ca4b6572eb74ec58e6d8c9b Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Nov 7 08:27:48 2008 +0900
+</p>
+<pre>
+    fixed plagger's spell
+</pre>
+<p>
+commit 481ab26c8164d2dd9ef76daa1862b30aa21e298b Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Nov 7 08:27:17 2008 +0900
+</p>
+<pre>
+    fixed README.
+</pre>
+<p>
+commit cd5ea112391bdc2962466c34b86d72e7a74511b6 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Nov 7 08:20:28 2008 +0900
+</p>
+<pre>
+    fixed example loading conf/config.yaml as default.
+</pre>
+<p>
+commit 6615d1f4bad4f8ac951211e7a06e66771633cd5c Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Nov 7 08:04:07 2008 +0900
+</p>
+<pre>
+    rename method around_event to call_event_around. you can easy to find for event point with greping call_event.
+</pre>
+<p>
+commit 2145538c94cc7047c0f74468fe3b5f7ea345d5f2 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Nov 7 07:54:24 2008 +0900
+</p>
+<pre>
+    separete example files.
+</pre>
+<p>
+commit 9a03c71d4d9f916634a15c36059bf30fa431679f Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Nov 7 07:31:43 2008 +0900
+</p>
+<pre>
+    implement feature for auto loading plugin.
+</pre>
+<p>
+commit 107e01ce7a0cabe7f946b3749de6cd6c12a13411 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Nov 4 08:29:45 2008 +0900
+</p>
+<pre>
+    refactoring.
+</pre>
+<p>
+commit 7e11c5539cff81ca012543aa08e5b2b669d04d7d Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Nov 4 08:04:59 2008 +0900
+</p>
+<pre>
+    dupping for saving original config.
+</pre>
+<p>
+commit c97fc9ffa9bafe9aab1af2466bf9bfeec2187479 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Nov 4 01:55:28 2008 +0900
+</p>
+<pre>
+    you can specify target component as base_name + component name + &quot;+plugin_name&quot;. ( for example. &quot;+Hoge&quot; is YourApp::Plugin::Hoge )
+</pre>
+<p>
+commit aec0021f58c11110c73b72686c5d8bb4edebf31b Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Nov 4 01:38:37 2008 +0900
+</p>
+<pre>
+    tweaked interface.
+</pre>
+<p>
+commit cec519d34be81c883f2150e4778b4b547ff42dea Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Nov 4 00:48:16 2008 +0900
+</p>
+<pre>
+    added testing plugin example.
+</pre>
+<p>
+commit 3e9f024bf23716200a00a4bdec8b322808f07e78 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Mon Nov 3 23:19:09 2008 +0900
+</p>
+<pre>
+    added plugin to example.
+</pre>
+<p>
+commit 4406106bb55056fde3a7fe1f0f6f49521368d608 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Oct 31 09:40:22 2008 +0900
+</p>
+<pre>
+    use method!!
+</pre>
+<p>
+commit 5dd5b3206120e18ac01c17df56a7bda2c3c584ce Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Fri Oct 31 09:35:47 2008 +0900
+</p>
+<pre>
+    I think it better not to use context directly.
+</pre>
+<p>
+commit 187a33e4a3daf4ef07fc286d1385016c1d555c81 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Thu Oct 30 08:49:04 2008 +0900
+</p>
+<pre>
+    fixed doc.
+</pre>
+<p>
+commit a36478b464cd59fefc18c4380ec97a3571f8990e Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Wed Oct 29 01:24:59 2008 +0900
+</p>
+<pre>
+    You can manage events in your application class. It may be prevend extending event not intentionally.
+</pre>
+<p>
+commit a7a25bb08969ce9ab62444f6e77855850a0b0925 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Wed Oct 29 00:57:45 2008 +0900
+</p>
+<pre>
+    fixed doc.
+</pre>
+<p>
+commit 9ff373f239903d756569159b8f2ba0d119793bee Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Wed Oct 29 00:28:53 2008 +0900
+</p>
+<pre>
+    You can define event with yield. It's useful to hook before and after for some event.
+</pre>
+<p>
+commit f6c77aabe86111978a84dd666afc43737fe931b2 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Oct 28 07:55:42 2008 +0900
+</p>
+<pre>
+    added original Exception class.
+</pre>
+<p>
+commit 781f68b0244461039c51fa99dd4c09eed7ab4c22 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Oct 28 07:45:27 2008 +0900
+</p>
+<pre>
+    added around_event
+</pre>
+<p>
+commit d26926274ab44e2b2c05272ca4c1ed4da6874dd2 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Oct 28 07:34:51 2008 +0900
+</p>
+<pre>
+    added doc for ClassX::Plugin::AutoRegister
+</pre>
+<p>
+commit ce8f46a6006ed62c76ccdfd3964684a847442177 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Oct 28 00:44:46 2008 +0900
+</p>
+<pre>
+    added CassX::Pluggable::Plugin::AutoRegister
+</pre>
+<p>
+commit b8d748953c9c6ce53453184e36d27ebf04aaf18e Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Oct 28 00:24:41 2008 +0900
+</p>
+<pre>
+    added define_event.
+</pre>
+<p>
+commit 81227fc1cc165f6dbb344850f95e7d7547df3eeb Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Oct 28 00:13:15 2008 +0900
+</p>
+<pre>
+    fixed doc.
+</pre>
+<p>
+commit 55c572cd701fc0bc6ac7efde644027c3c67c2e2e Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Tue Oct 28 00:10:24 2008 +0900
+</p>
+<pre>
+    changed Plugin API. Proc is not easy testing and debugging.
+</pre>
+<p>
+commit 0d7000a3971badf43e84b540350d59fae758e716 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Mon Oct 27 23:23:12 2008 +0900
+</p>
+<pre>
+    It's better to write dispatch method for testability.
+</pre>
+<p>
+commit caf6e5c6567ad542cb2d293a7b7ef10d4b5dc12e Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sun Oct 26 03:02:26 2008 +0900
+</p>
+<pre>
+    In this example, a plugin should inherite TestRunner::Plugin class.
+</pre>
+<p>
+commit f95e4d36eb61cc6254498d7dd2a99e7e5abffb20 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Oct 25 16:43:41 2008 +0900
+</p>
+<pre>
+    :module can take String.
+</pre>
+<p>
+commit 6dc389dcb998ad7e2a1b6541d8ef588718423314 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Oct 25 16:38:44 2008 +0900
+</p>
+<pre>
+    added docs.
+</pre>
+<p>
+commit f293440cc27414be86f2ec9aa0de420aabe5a633 Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Oct 25 13:45:54 2008 +0900
+</p>
+<pre>
+    remove garvage.
+</pre>
+<p>
+commit 1e8c86c0f53671bb18eda1044c35bd4296a2cbdc Author: Keiji, Yoshimi
+&lt;walf443@gmail.com&gt; Date: Sat Oct 25 13:44:48 2008 +0900
+</p>
+<pre>
+    initial import.
+</pre>
+</div>
+
+
+
+
+<p></p>
+
+
+
+
+
+
+
+</div><div class="clear" id="footer">Generated on Jan 21, 2008 / Allison 2 &copy; 2007 <a href="http://cloudbur.st">Cloudburst, LLC</a></div></div></body></html>
