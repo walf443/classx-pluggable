@@ -3,7 +3,7 @@ require 'logger'
 require 'stringio'
 require 'rake'
 
-def example_check name, bind=binding
+def example_check name
   base_dir = File.expand_path(File.join(File.dirname(__FILE__), '..'))
 
   target_runner = File.join(base_dir, 'examples', name, 'bin', "#{name}.rb")
